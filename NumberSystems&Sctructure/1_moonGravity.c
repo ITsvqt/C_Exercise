@@ -3,10 +3,10 @@
 int main(){
     float weight_In_Kilograms = 0.0f;
 
-    printf("Enter you'r weight in kilograms:\n");
+    printf("Enter your weight in kilograms:\n");
     scanf("%f",&weight_In_Kilograms);
 
-    printf("You'r weight on the moon is:\n%.2f",(weight_In_Kilograms*17)/100);
+    printf("Your weight on the moon is:\n%.2f",(weight_In_Kilograms*17)/100);
 
     return 0;
 }

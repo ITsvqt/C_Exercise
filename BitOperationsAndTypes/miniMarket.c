@@ -2,22 +2,22 @@
 
 
 int main (){
-    double dTomatoPrice = 4.5;
-    double dFlourPrice = 1.8;
-    double dYogurtPrice = 0.5;
-    double dIceCreamPrice = 0.6;
-    double dCandyPrice = 1.5;
-    double dLolipopPrice = 0.15;
+    float fTomatoPrice = 4.5;
+    float fFlourPrice = 1.8;
+    float fYogurtPrice = 0.5;
+    float fIceCreamPrice = 0.6;
+    float fCandyPrice = 1.5;
+    float fLolipopPrice = 0.15;
 
     unsigned int uiUserChoise = 0;
     float fAmount = 0.0;
-    double dMoneyOwned = 0 ;
-    printf("1 - tomato (%.2lf lv.) for 1kg\n",dTomatoPrice);
-    printf("2 - flour (%.2lf lv.) for 1 kg\n",dFlourPrice);
-    printf("3 - yogurt (%.2lf lv.) each",dYogurtPrice);
-    printf("4 - ice cream (%.2lf lv.) each\n",dIceCreamPrice);
-    printf("5 - candy (%.2lf lv.) for 1 kg\n",dCandyPrice);
-    printf("6 - lolipop (%.2lf lv.) each\n",dLolipopPrice);
+    float fMoneyOwned = 0.0 ;
+    printf("1 - tomato (%.2lf lv.) for 1kg\n",fTomatoPrice);
+    printf("2 - flour (%.2lf lv.) for 1 kg\n",fFlourPrice);
+    printf("3 - yogurt (%.2lf lv.) each",fYogurtPrice);
+    printf("4 - ice cream (%.2lf lv.) each\n",fIceCreamPrice);
+    printf("5 - candy (%.2lf lv.) for 1 kg\n",fCandyPrice);
+    printf("6 - lolipop (%.2lf lv.) each\n",fLolipopPrice);
     printf("9 - to exit\n");
     printf("Enter what you want :\n");
     scanf("%d", &uiUserChoise);
@@ -33,41 +33,41 @@ int main (){
     {
         switch(uiUserChoise){
             case 1:
-
+                fMoneyOwned += fTomatoPrice * fAmount;
             break;
-
             case 2:
-
+                fMoneyOwned += fFlourPrice * fAmount;
             break;
-
             case 3:
-
+                fMoneyOwned += fYogurtPrice * fAmount;
             break;
             case 4:
-
+                fMoneyOwned += fIceCreamPrice * fAmount;
             break;
             case 5:
-
+                fMoneyOwned += fCandyPrice * fAmount;
             break;
-
             case 6:
-
+                fMoneyOwned += fLolipopPrice * fAmount;
             break;
 
             default:
                 printf("Not a valid selection. Try again .");
             break;
         }
-        printf("Enter product code:\n");
+        printf("Enter code:\n");
         scanf("%d",&uiUserChoise);
+        if(uiUserChoise == 9)
+            continue;
+        printf("Enter amount:\n");
+        scanf("%f", &fAmount);
         while(fAmount <= 0){
-            printf("Enter amount:\n");
+            printf("Enter valid amount:\n");
             scanf("%d", &fAmount);
-            if(fAmount <=0)
-                printf("Please enter positve amount.\n");
         }
        
     }
+    printf("Total: %.2f\n",fMoneyOwned);
 
 
 

@@ -1,14 +1,21 @@
 #include <stdio.h>
 
-int main(){
+
+const int DAYS_IN_YEAR = 365;
+const int ONE_YEAR_ON_JUPITER = 12;
+
+int main()
+{
     int iEarthDays = 0;
+
     printf("Enter amount of Earth days:\n");
     scanf("%i",&iEarthDays);
-    printf("%d\n",iEarthDays);
 
-    float fEarthYears =  (float)iEarthDays / 365;
-    float fJupiterYears = fEarthYears / 12;
-
+    float fEarthYears =  (float)iEarthDays / DAYS_IN_YEAR;
+    printf("%f\n",fEarthYears);
+    
+    float fJupiterYears = fEarthYears / ONE_YEAR_ON_JUPITER;
     printf("Jupiter years:\n%.9f",fJupiterYears);
+
     return 0;
 }

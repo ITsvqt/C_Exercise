@@ -7,7 +7,4 @@ int main(){
     printf("Res = %d",addDigit(a,b));
 }
 
-int addDigit(int a, int b) 
-{
-    return (a + b);
-}
+int addDigit(int a, int b){ return (a + b);}

@@ -15,6 +15,7 @@ int removeBitsAfterIndex(int iNumberInput, unsigned int place_index);
 int setAllBitsDividedByThreeOnAll32Bits(int iNumberInput);
 int numberOfDifferentBits(int iNumberInput, int iNumberInput2);
 int reverseEveryOddBit(int iNumberInput);
+int occurrenceIfBitPatter(int iNumberInput);
 
 void intRepresentationAsBinary(int iNumberInput);
 
@@ -46,10 +47,11 @@ int main()
     //result = setAllBitsDividedByThreeOnAll32Bits(iNumberInput);
     //result = numberOfDifferentBits(iNumberInput,iNumberInput2);
     //result = reverseEveryOddBit(iNumberInput);
-    
+    // 2 = 1;18 = 2; 146 = 3;
+    //result = occurrenceIfBitPatter(iNumberInput);
     printf("%d\n", result);
     
-    intRepresentationAsBinary(iNumberInput);
+    //intRepresentationAsBinary(iNumberInput);
     
     return 0;
 }
@@ -209,6 +211,26 @@ int reverseEveryOddBit(int iNumberInput){
     
     return result;
 }
+
+int occurrenceIfBitPatter(int iNumberInput)
+{   
+    int mask = 7;
+    int result = 0;
+    int occurrence = 0;
+    while(iNumberInput)
+    {
+        result = iNumberInput & mask;
+        if(result == 2){
+            occurrence++;
+            iNumberInput >>= 3;
+        }
+        else
+        iNumberInput >>= 1;
+
+    }
+    return occurrence;
+}
+
 
 void intRepresentationAsBinary(int iNumberInput)
 {

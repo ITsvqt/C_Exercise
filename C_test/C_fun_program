@@ -10,6 +10,8 @@
 /* Word Count func */
 int wc();
 int replace_last();
+int reverse_words();
+
 
 void UI_Menu();
 void print_BaseMenu();
@@ -30,6 +32,13 @@ int main()
 
   return 0;
 }
+
+
+
+/*   ****************  */
+/*     functions   */
+/*   ****************  */
+/* ---                 */
 
 /* Word count in string by separator */
 int wc()
@@ -132,6 +141,78 @@ int replace_last()
   printf("%s\n", strResult);
 }
 
+/* Reverse order of words */
+int reverse_words()
+{
+  char strFrom [BUFFER_SIZE] = {0};
+  char strRes  [BUFFER_SIZE] = {0};
+  
+  int  iFromLen = 0;
+  int  iResLen  = 0;
+  int  iWordLen = 0;
+  
+  int  iIsWord  = 0;
+  int  iIsSpace = 0;
+  
+  char *pcItr       = NULL;       /* Iterator End -> Start */
+  char *pcWordEnd   = NULL;    
+  char *pcWordStart = NULL;  
+   
+   
+  get_InputStr(strFrom, "From");
+  remove_LF(strFrom);
+  iFromLen = strlen(strFrom);
+  
+  pcItr = strFrom + iFromLen - 1; /* Set iterator */
+  
+  while(pcItr >= strFrom)
+  {
+    iIsSpace = isspace(*pcItr);
+    
+    if(!iIsWord)
+    {
+      if(!iIsSpace)
+      {
+        iIsWord = 1; /* UP Word flag */
+        
+        pcWordEnd = pcItr;
+      }
+    }
+    else               
+    {
+      if(iIsSpace || pcItr == strFrom)
+      {
+        pcWordStart = pcItr;
+        
+        if(iIsSpace)
+        {
+          pcWordStart++;   
+        }
+       
+       iIsWord = 0;  /* DOWN Word flag */
+       
+       iWordLen = pcWordEnd - pcWordStart + 1;
+       
+       strncpy(strRes + iResLen, pcWordStart, iWordLen);
+       
+       iResLen += iWordLen;
+       
+       *(strRes+iResLen) = ' ';
+       
+       iResLen ++; 
+      }
+      
+    }/* end if;else */
+    
+    pcItr--;
+    
+  }/* end while */
+  
+  printf("RES: %s\n", strRes);
+  
+  return 0;
+}
+
 
 
 /*   ****************  */
@@ -173,8 +254,7 @@ void UI_Menu()
         break;
       
       case 4:
-        printf("Case 4\n");
-        
+        reverse_words();
         break;
         
       default:

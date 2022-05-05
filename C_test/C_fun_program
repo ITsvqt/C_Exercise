@@ -1,0 +1,306 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define LINE_SEPARATOR "--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --@\n"
+#define BUFFER_SIZE 512
+#define NUMBER_BUFFER 10
+
+/* Word Count func */
+int wc();
+int replace_last();
+
+void UI_Menu();
+void print_BaseMenu();
+
+void get_MenuOptn(int *piMenOptn);
+void get_InputStr(char *strString, char *strFieldInf);
+int get_InputInt(int  *piNumber, char *strFieldInf);
+
+void remove_LF(char *strString);
+void clear_STDIN();
+void clear_Screen();
+
+int main()
+{
+  system("clear");
+  UI_Menu();
+
+
+  return 0;
+}
+
+/* Word count in string by separator */
+int wc()
+{
+  char strSource   [BUFFER_SIZE] = {0};
+  char strSeparator[BUFFER_SIZE] = {0};
+    
+  get_InputStr(strSource, "Source");
+  get_InputStr(strSeparator, "Separator");
+  
+  char *strSepBegin = NULL;
+  int iWordCounter = 0;
+  int iSepLen = strlen(strSeparator);
+
+  /* string contains separator  */
+  while (strSepBegin = strstr(strSource, strSeparator))
+  {
+    /* Separator not at beginning */
+    if(strSepBegin != strSource)
+    {
+      iWordCounter++;
+    }
+    
+    /* move after separator */
+    strSepBegin += iSepLen;
+    
+    /* reasign base */
+    strcpy(strSource, strSepBegin);
+  }
+  
+  /* word after last separator */
+  if(strSource[0])
+  {
+    iWordCounter++;
+  }
+
+  return iWordCounter; 
+}
+
+/* Replace last occurrence of string */
+int replace_last()
+{
+  int i = 0;
+  int iSepLen = 0;
+  int iRepLen = 0;
+  int iOcrCnt = 0;
+  int iSymbolCnt = 0;
+  int  iReplacementsCnt       =  0;
+  char strSource[BUFFER_SIZE] = {0};
+  char strResult[BUFFER_SIZE] = {0};
+  char strFrom  [BUFFER_SIZE] = {0};
+  char strTo    [BUFFER_SIZE] = {0};
+  char *strSepBegin = NULL;
+
+  get_InputStr(strSource, "Source"     );
+  get_InputStr(strFrom  , "Pattern"    );
+  get_InputStr(strTo    , "Replacement");
+  
+  
+  strSepBegin = strSource;
+  iSepLen = strlen(strFrom);
+  iRepLen = strlen(strTo);
+  
+  /* First run */
+  while(strSepBegin = strstr(strSepBegin, strFrom))
+  {
+    strSepBegin += iSepLen;
+    iOcrCnt++;
+  }
+  
+  
+  /* pointer reseting */
+  strSepBegin = strSource;
+ 
+  /* pointer seting */
+  i = 0;
+  while(i < iOcrCnt)
+  {
+    strSepBegin = strstr(strSepBegin, strFrom);
+    
+    if(i < iOcrCnt - 1)
+    {
+      strSepBegin += iSepLen;
+    }
+    ++i;
+  }
+  
+  
+  iSymbolCnt = strSepBegin - strSource;
+  strncpy(strResult, strSource, iSymbolCnt);
+  
+  
+  // move pointer to final part of string
+  strSepBegin += iSepLen;
+  
+  
+  strcpy(strResult + strlen(strResult), strTo);
+  strcpy(strResult + strlen(strResult), strSepBegin);
+  
+  printf("%s\n", strResult);
+}
+
+
+
+/*   ****************  */
+/*    Menu functions   */
+/*   ****************  */
+/* ---                 */
+
+/* Menu for User navigation */
+void UI_Menu()
+{
+  /* Men optn var */
+  int iMenOptn = -1;
+
+  while(iMenOptn != 0)
+  {
+    print_BaseMenu();
+    
+    get_MenuOptn(&iMenOptn);
+    
+    switch(iMenOptn)
+    {
+      case 0:
+  
+        break;
+        
+      /* Left Pad func */  
+      case 1:
+        printf("Case 1\n");
+
+        break;
+      
+      /* Word Count func */
+      case 2:
+        printf("W Count: %d\n", wc());
+        break;
+      /* Replace Last func */  
+      case 3:
+        replace_last(); 
+        break;
+      
+      case 4:
+        printf("Case 4\n");
+        
+        break;
+        
+      default:
+        printf("CAREFULL !! Not a valid menu selection .\n");
+        break;
+    }
+    clear_Screen();
+  }
+}  
+
+void print_BaseMenu()
+{
+  printf("\n%s _C fun program   ' 1,97   (ISO 2007 v.15)\n\n", LINE_SEPARATOR);
+  printf("--------------------    (i)    -    -    -    -    -    -   (i)\n");
+  printf(" *        L_Pad [1] |\t__          Left pad word            __\n");
+  printf(" *   Word_Count [2] |\t__ Word count in string by separator __\n");
+  printf(" *     Rep_Last [3] |\t__      Replace last occurrence      __\n");
+  printf(" *    Rev_Words [4] |\t__ Reverse word order in a sentence  __\n");
+  printf(" #R        Exit [0] |\n");
+  printf("--------------------           -    -    -    -    -    -      \n\n");
+
+}
+
+
+
+/*   ****************  */
+/* User Input functions */
+/*   ****************  */
+/* ---                 */
+
+/* Get menu option from user */
+void get_MenuOptn(int *piMenOptn)
+{
+  printf("Menu option:    [x]\n");
+  scanf("%d", piMenOptn);
+  
+  clear_STDIN();
+  system("clear");
+}
+
+/* Reads string via console input */
+void get_InputStr(char *strString, char *strFieldInf)
+{
+  printf("Enter %s :\n", strFieldInf);
+  
+  fgets(strString, BUFFER_SIZE, stdin);
+  
+  remove_LF(strString);
+  
+  
+  if( (strlen(strString) + 1) >= BUFFER_SIZE)
+  {
+    clear_STDIN();
+  }
+}
+
+/* Read integer via console input
+ret val: 0 = OK */
+int get_InputInt(int *piNumber, char *strFieldInf)
+{
+  char strBuffer[NUMBER_BUFFER] = {0};
+  
+  int iCounter = 0;
+
+  printf("Enter number:\n(%d digits)\n", NUMBER_BUFFER - 1);
+  
+  fgets(strBuffer, NUMBER_BUFFER, stdin);
+  
+  remove_LF(strBuffer);
+  
+  if( (strlen(strBuffer) + 1) >= NUMBER_BUFFER)
+  {
+    clear_STDIN();
+  }
+  
+  while(strBuffer[iCounter])
+  {
+    if(!isdigit(strBuffer[iCounter]))
+    {
+      return 1;   //ERROR
+    }    
+    ++iCounter;
+  }
+ 
+  *piNumber = atoi(strBuffer);
+
+  return 0;       // ERROR_NONE
+}
+
+
+
+/*   ****************  */
+/* PURE Help functions */
+/*   ****************  */
+/* ---                 */
+
+/* Clear console screen */
+void clear_Screen()
+{
+  char c = 0;
+  printf("\nPress [Enter] to continue.\n");
+  
+  c = getchar();
+  
+  system("clear");
+}
+
+/* Empty stdin */
+void clear_STDIN()
+{
+  char c = 0;
+ 
+  do
+  {
+    c = getchar();
+  }while(c != '\n' && c != EOF);
+}
+
+/* Removes possible LF character at end of string */
+void remove_LF(char *strString)
+{
+  int iLen = strlen(strString) - 1;
+  
+  if( *(strString + iLen) == '\n')
+  {
+    *(strString + iLen) = '\0'; 
+  }
+}
+  

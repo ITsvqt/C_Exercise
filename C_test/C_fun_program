@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define LINE_SEPARATOR "--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --@\n"
-#define BUFFER_SIZE 512
-#define NUMBER_BUFFER 10
+#define LINE_SEPARATOR "--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- ---"
 
-/* Word Count func */
+#define NUMBER_BUFFER 10
+#define BUFFER_SIZE   512
+
+
+int lpad(char *target, char *source, char fill_char, int cnt); 
 int wc();
 int replace_last();
 int reverse_words();
@@ -16,17 +18,23 @@ int reverse_words();
 void UI_Menu();
 void print_BaseMenu();
 
-void get_MenuOptn(int *piMenOptn);
-void get_InputStr(char *strString, char *strFieldInf);
-int get_InputInt(int  *piNumber, char *strFieldInf);
+void get_MenuOptn (int *piMenOptn);
+int  get_InputStr (char *strString, char *strFieldInf);
+int  get_InputInt (int  *piNumber , char *strFieldInf);
+int  get_InputChr (char *pcChar   , char *strFieldInf);
 
-void remove_LF(char *strString);
-void clear_STDIN();
+int  is_StringNumbers(char *strString);
+void remove_LF       (char *strString);
+void clear_STDIN ();
 void clear_Screen();
+
+void logError_NullArg(const char *strFuncName);
+
 
 int main()
 {
   system("clear");
+
   UI_Menu();
 
 
@@ -40,18 +48,67 @@ int main()
 /*   ****************  */
 /* ---                 */
 
+
+int lpad(char *target, char *source, char fill_char, int cnt)
+{
+  char strSrc [BUFFER_SIZE] = {0};
+  char strRes [BUFFER_SIZE] = {0};
+  char cFill    = 0;
+  int  iFillLen = 0;
+  int  iSrcLen  = 0;
+  
+ 
+  get_InputInt(&iFillLen, "Pad length");
+  get_InputChr(&cFill   , "Fill char" );
+  get_InputStr(strSrc   , "Source"    );
+  
+  iSrcLen = strlen(strSrc);
+ 
+  if(iSrcLen > iFillLen)
+  {
+    strcpy(strRes, strSrc); 
+  }
+  else
+  {
+    while(iFillLen > 0)
+    {
+      strRes[strlen(strRes)] = cFill;
+      
+      --iFillLen; 
+    }
+    
+    strcpy( (strRes + strlen(strRes)) , strSrc);
+  }
+  
+  printf("\t *Left pad\n\n");
+  printf("SRC\t[%s]\n",   strSrc  );
+  printf("CHR\t[%c]\n",   cFill   );
+  printf("LEN\t[%d]\n\n", iFillLen);
+  printf("RES\t[%s]\n",   strRes  );
+  
+  return 0; //ERROR_NONE
+}
+
+
 /* Word count in string by separator */
 int wc()
 {
-  char strSource   [BUFFER_SIZE] = {0};
   char strSeparator[BUFFER_SIZE] = {0};
+  char strSource   [BUFFER_SIZE] = {0};
+  char strInput    [BUFFER_SIZE] = {0};
     
-  get_InputStr(strSource, "Source");
-  get_InputStr(strSeparator, "Separator");
+  int iWordCounter = 0;
+  int iSepLen      = 0; 
   
   char *strSepBegin = NULL;
-  int iWordCounter = 0;
-  int iSepLen = strlen(strSeparator);
+
+
+  get_InputStr(strSeparator, "Separator");
+  get_InputStr(strSource   , "Source"   );
+  
+  strcpy(strInput, strSource);
+  
+  iSepLen = strlen(strSeparator);
 
   /* string contains separator  */
   while (strSepBegin = strstr(strSource, strSeparator))
@@ -74,98 +131,127 @@ int wc()
   {
     iWordCounter++;
   }
-
-  return iWordCounter; 
+  printf("\t *Word count\n\n");
+  printf("SRC\t[%s]\n"  ,     strInput);
+  printf("SEP\t[%s]\n\n", strSeparator);
+  printf("WC \t[%d]\n"  , iWordCounter);
+  
+  return 0; // ERROR_NONE 
 }
 
 /* Replace last occurrence of string */
 int replace_last()
 {
-  int i = 0;
-  int iSepLen = 0;
-  int iRepLen = 0;
-  int iOcrCnt = 0;
-  int iSymbolCnt = 0;
-  int  iReplacementsCnt       =  0;
   char strSource[BUFFER_SIZE] = {0};
   char strResult[BUFFER_SIZE] = {0};
-  char strFrom  [BUFFER_SIZE] = {0};
-  char strTo    [BUFFER_SIZE] = {0};
+  char strFrom  [BUFFER_SIZE] = {0};  /* Match   pattern */
+  char strTo    [BUFFER_SIZE] = {0};  /* Replace pattern */
+    
+  int  iReplacements = 0;
+  
+  int  iFromLen = 0;
+  int  iHeadLen = 0;  /* Length of First Part */
+  int  iOcrCnt  = 0;
+  int  i        = 0;
+
   char *strSepBegin = NULL;
 
-  get_InputStr(strSource, "Source"     );
-  get_InputStr(strFrom  , "Pattern"    );
-  get_InputStr(strTo    , "Replacement");
+
+  get_InputStr(strSource, "Source"  );
+  get_InputStr(strFrom  , "Replace" );
+  get_InputStr(strTo    , "To"      );
   
+  iFromLen = strlen(strFrom);
   
   strSepBegin = strSource;
-  iSepLen = strlen(strFrom);
-  iRepLen = strlen(strTo);
   
-  /* First run */
+  /* Count occurrence of pattern */
   while(strSepBegin = strstr(strSepBegin, strFrom))
   {
-    strSepBegin += iSepLen;
+    strSepBegin += iFromLen;
+    
     iOcrCnt++;
   }
   
-  
-  /* pointer reseting */
-  strSepBegin = strSource;
- 
-  /* pointer seting */
-  i = 0;
-  while(i < iOcrCnt)
+  if(!iOcrCnt)
   {
-    strSepBegin = strstr(strSepBegin, strFrom);
+    iReplacements = 0;
     
-    if(i < iOcrCnt - 1)
-    {
-      strSepBegin += iSepLen;
-    }
-    ++i;
+    strcpy(strResult, strSource);
   }
+  else
+  {
+    iReplacements = 1;
+    
+    /* pointer reseting */
+    strSepBegin = strSource;
+ 
+    /* Set on last occurrence */
+    while(i < iOcrCnt)
+    {
+      strSepBegin = strstr(strSepBegin, strFrom);
+    
+      if(i < iOcrCnt - 1)
+      {
+        strSepBegin += iFromLen;
+      }
+    
+      ++i;
+    }
   
+    iHeadLen = strSepBegin - strSource;
   
-  iSymbolCnt = strSepBegin - strSource;
-  strncpy(strResult, strSource, iSymbolCnt);
+    /***   Head  ***/
+    strncpy(strResult, strSource, iHeadLen);
   
+    strSepBegin += iFromLen;
   
-  // move pointer to final part of string
-  strSepBegin += iSepLen;
+    /* Replacement */
+    strcpy(strResult + strlen(strResult), strTo);
   
+    /***   Tail  ***/
+    strcpy(strResult + strlen(strResult), strSepBegin);
+   }
+    
   
-  strcpy(strResult + strlen(strResult), strTo);
-  strcpy(strResult + strlen(strResult), strSepBegin);
+  printf("\t *Replace last\n\n");
+  printf("SRC \t[%s]\n",   strSource);
+  printf("FROM\t[%s]\n",   strFrom  );
+  printf("TO  \t[%s]\n\n",   strTo    );
+  printf("RES \t[%s]\n", strResult);
+  printf("Changes [%d]\n", iReplacements);
   
-  printf("%s\n", strResult);
+  return 0; // ERROR_NONE
 }
 
 /* Reverse order of words */
 int reverse_words()
 {
-  char strFrom [BUFFER_SIZE] = {0};
-  char strRes  [BUFFER_SIZE] = {0};
+  char strSource [BUFFER_SIZE] = {0};
+  char strResult [BUFFER_SIZE] = {0};
   
-  int  iFromLen = 0;
+  int  iSrcLen  = 0;
   int  iResLen  = 0;
   int  iWordLen = 0;
   
   int  iIsWord  = 0;
   int  iIsSpace = 0;
   
-  char *pcItr       = NULL;       /* Iterator End -> Start */
-  char *pcWordEnd   = NULL;    
   char *pcWordStart = NULL;  
-   
-   
-  get_InputStr(strFrom, "From");
-  remove_LF(strFrom);
-  iFromLen = strlen(strFrom);
+  char *pcWordEnd   = NULL;    
+  char *pcItr       = NULL;       /* Iterator End -> Start */
   
-  pcItr = strFrom + iFromLen - 1; /* Set iterator */
   
-  while(pcItr >= strFrom)
+  get_InputStr(strSource, "Source");
+  
+  remove_LF(strSource);
+  
+  iSrcLen = strlen(strSource);
+  
+  /******** Set iterator *******/
+  pcItr = strSource + iSrcLen - 1; 
+  
+  while(pcItr >= strSource)
   {
     iIsSpace = isspace(*pcItr);
     
@@ -173,14 +259,14 @@ int reverse_words()
     {
       if(!iIsSpace)
       {
-        iIsWord = 1; /* UP Word flag */
+        iIsWord = 1;              /* UP Word flag */
         
         pcWordEnd = pcItr;
       }
     }
     else               
     {
-      if(iIsSpace || pcItr == strFrom)
+      if(iIsSpace || pcItr == strSource)
       {
         pcWordStart = pcItr;
         
@@ -189,15 +275,15 @@ int reverse_words()
           pcWordStart++;   
         }
        
-       iIsWord = 0;  /* DOWN Word flag */
+       iIsWord = 0;            /* DOWN Word flag */
        
        iWordLen = pcWordEnd - pcWordStart + 1;
        
-       strncpy(strRes + iResLen, pcWordStart, iWordLen);
+       strncpy(strResult + iResLen, pcWordStart, iWordLen);
        
        iResLen += iWordLen;
        
-       *(strRes+iResLen) = ' ';
+       *(strResult+iResLen) = ' ';
        
        iResLen ++; 
       }
@@ -208,9 +294,11 @@ int reverse_words()
     
   }/* end while */
   
-  printf("RES: %s\n", strRes);
+  printf("\t *Reverse words\n\n");
+  printf("SRC\t[%s]\n", strSource);
+  printf("RES\t[%s]\n", strResult);
   
-  return 0;
+  return 0; //ERROR_NONE
 }
 
 
@@ -225,6 +313,7 @@ void UI_Menu()
 {
   /* Men optn var */
   int iMenOptn = -1;
+
 
   while(iMenOptn != 0)
   {
@@ -246,7 +335,7 @@ void UI_Menu()
       
       /* Word Count func */
       case 2:
-        printf("W Count: %d\n", wc());
+        wc();
         break;
       /* Replace Last func */  
       case 3:
@@ -267,14 +356,17 @@ void UI_Menu()
 
 void print_BaseMenu()
 {
-  printf("\n%s _C fun program   ' 1,97   (ISO 2007 v.15)\n\n", LINE_SEPARATOR);
-  printf("--------------------    (i)    -    -    -    -    -    -   (i)\n");
-  printf(" *        L_Pad [1] |\t__          Left pad word            __\n");
-  printf(" *   Word_Count [2] |\t__ Word count in string by separator __\n");
-  printf(" *     Rep_Last [3] |\t__      Replace last occurrence      __\n");
-  printf(" *    Rev_Words [4] |\t__ Reverse word order in a sentence  __\n");
-  printf(" #R        Exit [0] |\n");
-  printf("--------------------           -    -    -    -    -    -      \n\n");
+  printf("%s\n", LINE_SEPARATOR);
+  printf("\t\t_C fun program   ' 1,97   (ISO 2007 v.15)\n");
+  printf("%s\n\n\n", LINE_SEPARATOR);
+  printf("\t--------------------    (i)    -    -    -    -    -    -   (i)\n");
+  printf("\t *        L_Pad [1] |\t__          Left pad word            __\n");
+  printf("\t *   Word_Count [2] |\t__ Word count in string by separator __\n");
+  printf("\t *     Rep_Last [3] |\t__      Replace last occurrence      __\n");
+  printf("\t *    Rev_Words [4] |\t__ Reverse word order in a sentence  __\n");
+  printf("\t                    |\n");
+  printf("\t #R        Exit [0] |\n");
+  printf("\t--------------------            -    -    -    -    -    -      \n\n");
 
 }
 
@@ -288,7 +380,7 @@ void print_BaseMenu()
 /* Get menu option from user */
 void get_MenuOptn(int *piMenOptn)
 {
-  printf("Menu option:    [x]\n");
+  printf("\tMenu option:    [x]\n");
   scanf("%d", piMenOptn);
   
   clear_STDIN();
@@ -296,52 +388,133 @@ void get_MenuOptn(int *piMenOptn)
 }
 
 /* Reads string via console input */
-void get_InputStr(char *strString, char *strFieldInf)
+int get_InputStr(char *strString, char *strFieldInf)
 {
-  printf("Enter %s :\n", strFieldInf);
-  
-  fgets(strString, BUFFER_SIZE, stdin);
-  
-  remove_LF(strString);
-  
-  
-  if( (strlen(strString) + 1) >= BUFFER_SIZE)
+  if(!strString || !strFieldInf)
   {
-    clear_STDIN();
+    logError_NullArg(__func__);
+
+    return 1; //ERROR 
   }
+  
+  int iBuffLen = 0;
+  
+  do
+  {
+    system("clear");
+    
+    memset(strString, 0, BUFFER_SIZE);
+    
+    printf("\tEnter [string] for [%s](max %d charecters):\n\n", strFieldInf, BUFFER_SIZE - 2);
+    
+    fgets(strString, BUFFER_SIZE, stdin);
+    
+    remove_LF(strString);
+    
+    iBuffLen = strlen(strString);
+    
+    if(iBuffLen + 1 >= BUFFER_SIZE)
+    {
+      clear_STDIN();
+    }
+    else
+    {
+      system("clear");
+      return 0; //ERROR_NONE
+    }
+    
+  }while(1); 
+
 }
 
 /* Read integer via console input
 ret val: 0 = OK */
 int get_InputInt(int *piNumber, char *strFieldInf)
 {
-  char strBuffer[NUMBER_BUFFER] = {0};
-  
-  int iCounter = 0;
+  if(!piNumber || !strFieldInf)
+  {
+    logError_NullArg(__func__);
 
-  printf("Enter number:\n(%d digits)\n", NUMBER_BUFFER - 1);
-  
-  fgets(strBuffer, NUMBER_BUFFER, stdin);
-  
-  remove_LF(strBuffer);
-  
-  if( (strlen(strBuffer) + 1) >= NUMBER_BUFFER)
-  {
-    clear_STDIN();
+    return 1; //ERROR 
   }
   
-  while(strBuffer[iCounter])
+  char strBuffer[NUMBER_BUFFER] = {0};
+  int  iBuffLen  = 0;
+  int  isBuffOvf = 0;
+
+  
+  do
   {
-    if(!isdigit(strBuffer[iCounter]))
+    isBuffOvf = 0;
+    
+    system("clear");
+  
+    memset(strBuffer, 0, NUMBER_BUFFER);
+    
+    printf("\tEnter [number] for [%s](max %d digits):\n\n", strFieldInf, NUMBER_BUFFER - 2);
+    
+    fgets(strBuffer, NUMBER_BUFFER, stdin);
+  
+    remove_LF(strBuffer);
+  
+    iBuffLen = strlen(strBuffer);
+
+    if(iBuffLen + 1 >= NUMBER_BUFFER)
     {
-      return 1;   //ERROR
-    }    
-    ++iCounter;
-  }
+      clear_STDIN();
+      
+      isBuffOvf = 1;
+    }
+  }while(is_StringNumbers(strBuffer) || isBuffOvf);
  
   *piNumber = atoi(strBuffer);
 
+  system("clear");
+
   return 0;       // ERROR_NONE
+}
+
+/* Read single char via console input 
+   ret val: 0 = OK */
+int get_InputChr(char * pcChar, char *strFieldInf)
+{
+  if(!pcChar || !strFieldInf)
+  {
+    logError_NullArg(__func__);
+
+    return 1; //ERROR 
+  }
+        
+  char strBuffer[BUFFER_SIZE] = {0};
+  int  iBuffLen = 0;
+
+  
+  do
+  {
+    system("clear");
+    
+    memset(strBuffer, 0, BUFFER_SIZE);
+    
+    printf("\tEnter [single charecter] for [%s] :\n\n", strFieldInf);
+  
+    fgets(strBuffer, BUFFER_SIZE, stdin);
+  
+    remove_LF(strBuffer);
+  
+    iBuffLen = strlen(strBuffer);
+    
+    if(iBuffLen + 1 >= BUFFER_SIZE)
+    {
+      clear_STDIN();
+    }
+    
+  }while(iBuffLen != 1);
+
+  *pcChar = *strBuffer;
+  
+  system("clear");
+  
+  return 0;   // ERROR_NONE
 }
 
 
@@ -351,13 +524,41 @@ int get_InputInt(int *piNumber, char *strFieldInf)
 /*   ****************  */
 /* ---                 */
 
+/* String characters '0' - '9'
+   ret val: 0 = YES */
+int  is_StringNumbers(char *strString)
+{
+  int iCnt = 0;
+  
+  while(strString[iCnt])
+  {
+    if(!isdigit(strString[iCnt]))
+    {
+      return 1;   //ERROR
+    }
+    
+    ++iCnt; 
+  }
+  return 0;       //ERROR_NONE
+}
+
 /* Clear console screen */
 void clear_Screen()
 {
-  char c = 0;
+  char strBuff[BUFFER_SIZE] = {0};
+  int iBuffLen = 0;
+
+  
   printf("\nPress [Enter] to continue.\n");
   
-  c = getchar();
+  fgets(strBuff, BUFFER_SIZE, stdin);
+  
+  iBuffLen = strlen(strBuff);
+  
+  if(iBuffLen + 1 >= BUFFER_SIZE)
+  {
+    clear_STDIN();
+  }
   
   system("clear");
 }
@@ -366,10 +567,12 @@ void clear_Screen()
 void clear_STDIN()
 {
   char c = 0;
+
  
   do
   {
     c = getchar();
+    //printf("Cl ch: %d\n", c);
   }while(c != '\n' && c != EOF);
 }
 
@@ -377,10 +580,24 @@ void clear_STDIN()
 void remove_LF(char *strString)
 {
   int iLen = strlen(strString) - 1;
+
   
   if( *(strString + iLen) == '\n')
   {
     *(strString + iLen) = '\0'; 
   }
 }
-  
+
+
+
+/*   ****************  */
+/* ERROR log functions */
+/*   ****************  */
+/* ---                 */
+
+/* NULL argument passed to function*/
+void logError_NullArg(const char *strFuncName)
+{
+  printf("ERROR: NULL reference arg in [%s]\n", __func__);
+}
+// LINE 600 OMG

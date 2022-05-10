@@ -181,7 +181,7 @@ int replace_last()
   int  i        = 0;
 
   char *strSepBegin = NULL;
-//////////////////////////////////////////////////////
+  
    do
   {
     get_InputStr(strSrc  , "Source"  );
@@ -191,26 +191,21 @@ int replace_last()
     iSrcLen  = strlen(strSrc);
     iFromLen = strlen(strFrom);
     
-    printf("[%d] [%d] [%d]\n", iSrcLen, );
-    if(iSrcLen - )
+    
+    if( (iSrcLen - iFromLen + strlen(strTo)) >= BUFFER_SIZE)
     {
-      if( (iFillLen + iSrcLen) >= BUFFER_SIZE )
-      {
-       printf("Pad[%d]\nLen[%d]\nTot[%d] Max[%d]\n", iFillLen, iSrcLen, (iFillLen + iSrcLen), BUFFER_SIZE - 1);
-       printf("Input data will cause \"Memory fault\"\n");
+      printf("str[%d] - fr[%d] + to[%d]\nTot[%d]\nMax[%d]\n "
+      , iSrcLen, iFromLen, strlen(strTo), (iSrcLen - iFromLen + strlen(strTo)) , BUFFER_SIZE - 1);
+      printf("Input data will cause \"Memory fault\"\n");
         
-       clear_Screen();
+      clear_Screen();
         
-       continue;
-      }
+      continue;
     }
     
     break;
     
   }while(1);
-//////////////////////////////////////////////////////
-    
-  
   
   strSepBegin = strSrc;
   
@@ -268,7 +263,7 @@ int replace_last()
   printf("FROM\t[%s]\n",   strFrom  );
   printf("TO  \t[%s]\n\n", strTo    );
   printf("RES \t[%s]\n",   strRes   );
-  printf("Changes [%d]\n", iReplacements);
+  printf("DIF \t[%d]\n", iReplacements);
   
   return 0; // ERROR_NONE
 }
@@ -450,6 +445,7 @@ int get_InputStr(char *strString, char *strFieldInf)
   
   int iBuffLen = 0;
   
+  
   do
   {
     system("clear");
@@ -465,7 +461,11 @@ int get_InputStr(char *strString, char *strFieldInf)
     
     iBuffLen = strlen(strString);
     
-    if(iBuffLen + 1 >= BUFFER_SIZE)
+    if(iBuffLen == 0)
+    {
+      ;
+    }
+    else if(iBuffLen + 1 >= BUFFER_SIZE)
     {
       clear_STDIN();
     }
@@ -473,10 +473,10 @@ int get_InputStr(char *strString, char *strFieldInf)
     {
       system("clear");
       //clear_Screen();
-      return 0; //ERROR_NONE
+      return 0;  //ERROR_NONE
     }
-    
-  }while(1); 
+
+  }while(1);
 
 }
 
@@ -494,16 +494,18 @@ int get_InputInt(int *piNumber, char *strFieldInf)
   char strBuffer[NUMBER_BUFFER] = {0};
   int  iBuffLen  = 0;
   int  isBuffOvf = 0;
+  int  isBuffEmp = 0;
 
   
   do
   {
     isBuffOvf = 0;
+    isBuffEmp = 0;
     
     system("clear");
   
     memset(strBuffer, 0, NUMBER_BUFFER);
-    
+
     printf("\tEnter [number] for [%s](max %d digits):\n\n", strFieldInf, NUMBER_BUFFER - 2);
     
     fgets(strBuffer, NUMBER_BUFFER, stdin);
@@ -511,14 +513,19 @@ int get_InputInt(int *piNumber, char *strFieldInf)
     remove_LF(strBuffer);
   
     iBuffLen = strlen(strBuffer);
-
-    if(iBuffLen + 1 >= NUMBER_BUFFER)
+    
+    if(iBuffLen == 0)
+    {
+      isBuffEmp = 1; 
+    }
+    else if(iBuffLen + 1 >= NUMBER_BUFFER)
     {
       clear_STDIN();
       
       isBuffOvf = 1;
     }
-  }while(is_StringNumbers(strBuffer) || isBuffOvf);
+    
+  }while(is_StringNumbers(strBuffer) || isBuffOvf || isBuffEmp);
  
   *piNumber = atoi(strBuffer);
 
@@ -587,19 +594,19 @@ int  is_StringNumbers(char *strString)
   {
     if(!isdigit(strString[iCnt]))
     {
-      return 1;   //ERROR
+      return 1;   // FALSE
     }
     
     ++iCnt; 
   }
-  return 0;       //ERROR_NONE
+  return 0;       //TRUE
 }
 
 /* Clear console screen */
 void clear_Screen()
 {
   char strBuff[BUFFER_SIZE] = {0};
-  int iBuffLen = 0;
+  int  iBuffLen = 0;
 
   
   printf("\n\nPress [Enter] to continue.\n");
@@ -653,4 +660,3 @@ void logError_NullArg(const char *strFuncName)
 {
   printf("ERROR: NULL reference arg in [%s]\n", __func__);
 }
-// LINE 600 OMG

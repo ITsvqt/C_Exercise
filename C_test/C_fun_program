@@ -9,7 +9,7 @@
 #define BUFFER_SIZE   512
 
 
-int lpad(char *target, char *source, char fill_char, int cnt); 
+int lpad(); 
 int wc();
 int replace_last();
 int reverse_words();
@@ -44,25 +44,49 @@ int main()
 
 
 /*   ****************  */
-/*     functions   */
+/*     Functions   */
 /*   ****************  */
 /* ---                 */
 
 
-int lpad(char *target, char *source, char fill_char, int cnt)
+/* Left pad string */
+int lpad()
 {
   char strSrc [BUFFER_SIZE] = {0};
   char strRes [BUFFER_SIZE] = {0};
+    
   char cFill    = 0;
   int  iFillLen = 0;
   int  iSrcLen  = 0;
+  int  iCnt     = 0;
   
+  /* Check input data to ensure no memory faults,
+     because we using string replacing */
+  do
+  {
+    get_InputInt(&iFillLen, "Pad length");
+    get_InputChr(&cFill   , "Fill char" );
+    get_InputStr(strSrc   , "Source"    );
+    
+    iSrcLen = strlen(strSrc);
+    
+    if(iFillLen >= iSrcLen)
+    {
+      if( (iFillLen + iSrcLen) >= BUFFER_SIZE )
+      {
+       printf("Pad[%d]\nLen[%d]\nTot[%d] Max[%d]\n", iFillLen, iSrcLen, (iFillLen + iSrcLen), BUFFER_SIZE - 1);
+       printf("Input data will cause \"Memory fault\"\n");
+        
+       clear_Screen();
+        
+       continue;
+      }
+    }
+    
+    break;
+    
+  }while(1);  
  
-  get_InputInt(&iFillLen, "Pad length");
-  get_InputChr(&cFill   , "Fill char" );
-  get_InputStr(strSrc   , "Source"    );
-  
-  iSrcLen = strlen(strSrc);
  
   if(iSrcLen > iFillLen)
   {
@@ -70,21 +94,21 @@ int lpad(char *target, char *source, char fill_char, int cnt)
   }
   else
   {
-    while(iFillLen > 0)
+    while(iFillLen > iCnt)
     {
       strRes[strlen(strRes)] = cFill;
       
-      --iFillLen; 
+      ++iCnt;
     }
     
     strcpy( (strRes + strlen(strRes)) , strSrc);
   }
   
   printf("\t *Left pad\n\n");
-  printf("SRC\t[%s]\n",   strSrc  );
-  printf("CHR\t[%c]\n",   cFill   );
-  printf("LEN\t[%d]\n\n", iFillLen);
-  printf("RES\t[%s]\n",   strRes  );
+  printf("SRC\t[%s]\n"  ,   strSrc );
+  printf("CHR\t[%c]\n"  ,   cFill  );
+  printf("LEN\t[%d]\n\n", iFillLen );
+  printf("RES\t[%s]\n"  ,   strRes );
   
   return 0; //ERROR_NONE
 }
@@ -131,10 +155,11 @@ int wc()
   {
     iWordCounter++;
   }
+  
   printf("\t *Word count\n\n");
-  printf("SRC\t[%s]\n"  ,     strInput);
-  printf("SEP\t[%s]\n\n", strSeparator);
-  printf("WC \t[%d]\n"  , iWordCounter);
+  printf("SRC\t[%s]\n"  , strInput     );
+  printf("SEP\t[%s]\n\n", strSeparator );
+  printf("WC \t[%d]\n"  , iWordCounter );
   
   return 0; // ERROR_NONE 
 }
@@ -142,28 +167,52 @@ int wc()
 /* Replace last occurrence of string */
 int replace_last()
 {
-  char strSource[BUFFER_SIZE] = {0};
-  char strResult[BUFFER_SIZE] = {0};
-  char strFrom  [BUFFER_SIZE] = {0};  /* Match   pattern */
-  char strTo    [BUFFER_SIZE] = {0};  /* Replace pattern */
+  char strSrc  [BUFFER_SIZE] = {0};
+  char strRes  [BUFFER_SIZE] = {0};
+  char strFrom [BUFFER_SIZE] = {0};  /* Match   pattern */
+  char strTo   [BUFFER_SIZE] = {0};  /* Replace pattern */
     
   int  iReplacements = 0;
   
   int  iFromLen = 0;
-  int  iHeadLen = 0;  /* Length of First Part */
+  int  iHeadLen = 0;  /* Length of part before replacement */
+  int  iSrcLen  = 0;
   int  iOcrCnt  = 0;
   int  i        = 0;
 
   char *strSepBegin = NULL;
-
-
-  get_InputStr(strSource, "Source"  );
-  get_InputStr(strFrom  , "Replace" );
-  get_InputStr(strTo    , "To"      );
+//////////////////////////////////////////////////////
+   do
+  {
+    get_InputStr(strSrc  , "Source"  );
+    get_InputStr(strFrom , "Replace" );
+    get_InputStr(strTo   , "To"      );
+    
+    iSrcLen  = strlen(strSrc);
+    iFromLen = strlen(strFrom);
+    
+    printf("[%d] [%d] [%d]\n", iSrcLen, );
+    if(iSrcLen - )
+    {
+      if( (iFillLen + iSrcLen) >= BUFFER_SIZE )
+      {
+       printf("Pad[%d]\nLen[%d]\nTot[%d] Max[%d]\n", iFillLen, iSrcLen, (iFillLen + iSrcLen), BUFFER_SIZE - 1);
+       printf("Input data will cause \"Memory fault\"\n");
+        
+       clear_Screen();
+        
+       continue;
+      }
+    }
+    
+    break;
+    
+  }while(1);
+//////////////////////////////////////////////////////
+    
   
-  iFromLen = strlen(strFrom);
   
-  strSepBegin = strSource;
+  strSepBegin = strSrc;
   
   /* Count occurrence of pattern */
   while(strSepBegin = strstr(strSepBegin, strFrom))
@@ -177,14 +226,14 @@ int replace_last()
   {
     iReplacements = 0;
     
-    strcpy(strResult, strSource);
+    strcpy(strRes, strSrc);
   }
   else
   {
     iReplacements = 1;
     
     /* pointer reseting */
-    strSepBegin = strSource;
+    strSepBegin = strSrc;
  
     /* Set on last occurrence */
     while(i < iOcrCnt)
@@ -199,26 +248,26 @@ int replace_last()
       ++i;
     }
   
-    iHeadLen = strSepBegin - strSource;
+    iHeadLen = strSepBegin - strSrc;
   
     /***   Head  ***/
-    strncpy(strResult, strSource, iHeadLen);
+    strncpy(strRes, strSrc, iHeadLen);
   
     strSepBegin += iFromLen;
   
     /* Replacement */
-    strcpy(strResult + strlen(strResult), strTo);
+    strcpy(strRes + strlen(strRes), strTo);
   
     /***   Tail  ***/
-    strcpy(strResult + strlen(strResult), strSepBegin);
+    strcpy(strRes + strlen(strRes), strSepBegin);
    }
     
   
   printf("\t *Replace last\n\n");
-  printf("SRC \t[%s]\n",   strSource);
+  printf("SRC \t[%s]\n",   strSrc   );
   printf("FROM\t[%s]\n",   strFrom  );
-  printf("TO  \t[%s]\n\n",   strTo    );
-  printf("RES \t[%s]\n", strResult);
+  printf("TO  \t[%s]\n\n", strTo    );
+  printf("RES \t[%s]\n",   strRes   );
   printf("Changes [%d]\n", iReplacements);
   
   return 0; // ERROR_NONE
@@ -259,7 +308,7 @@ int reverse_words()
     {
       if(!iIsSpace)
       {
-        iIsWord = 1;              /* UP Word flag */
+        iIsWord = 1;             /* UP Word flag */
         
         pcWordEnd = pcItr;
       }
@@ -275,7 +324,7 @@ int reverse_words()
           pcWordStart++;   
         }
        
-       iIsWord = 0;            /* DOWN Word flag */
+       iIsWord = 0;              /* DOWN Word flag */
        
        iWordLen = pcWordEnd - pcWordStart + 1;
        
@@ -312,7 +361,7 @@ int reverse_words()
 void UI_Menu()
 {
   /* Men optn var */
-  int iMenOptn = -1;
+  int  iMenOptn = -1;
 
 
   while(iMenOptn != 0)
@@ -324,30 +373,32 @@ void UI_Menu()
     switch(iMenOptn)
     {
       case 0:
-  
+        /* 0 */  
         break;
         
       /* Left Pad func */  
       case 1:
-        printf("Case 1\n");
-
+        lpad();
         break;
       
-      /* Word Count func */
+      /* Word Count func by ' ' */
       case 2:
         wc();
         break;
+        
       /* Replace Last func */  
       case 3:
         replace_last(); 
         break;
       
+      /* Reverse words by ' ' */
       case 4:
         reverse_words();
         break;
         
       default:
         printf("CAREFULL !! Not a valid menu selection .\n");
+        
         break;
     }
     clear_Screen();
@@ -357,7 +408,7 @@ void UI_Menu()
 void print_BaseMenu()
 {
   printf("%s\n", LINE_SEPARATOR);
-  printf("\t\t_C fun program   ' 1,97   (ISO 2007 v.15)\n");
+  printf("\t\t\t_C fun program  ' 1,97\t\t\t(ISO 2007 v.15)\n");
   printf("%s\n\n\n", LINE_SEPARATOR);
   printf("\t--------------------    (i)    -    -    -    -    -    -   (i)\n");
   printf("\t *        L_Pad [1] |\t__          Left pad word            __\n");
@@ -402,6 +453,7 @@ int get_InputStr(char *strString, char *strFieldInf)
   do
   {
     system("clear");
+    //clear_Screen();
     
     memset(strString, 0, BUFFER_SIZE);
     
@@ -420,6 +472,7 @@ int get_InputStr(char *strString, char *strFieldInf)
     else
     {
       system("clear");
+      //clear_Screen();
       return 0; //ERROR_NONE
     }
     
@@ -520,7 +573,7 @@ int get_InputChr(char * pcChar, char *strFieldInf)
 
 
 /*   ****************  */
-/* PURE Help functions */
+/*    Help functions   */
 /*   ****************  */
 /* ---                 */
 
@@ -549,7 +602,7 @@ void clear_Screen()
   int iBuffLen = 0;
 
   
-  printf("\nPress [Enter] to continue.\n");
+  printf("\n\nPress [Enter] to continue.\n");
   
   fgets(strBuff, BUFFER_SIZE, stdin);
   

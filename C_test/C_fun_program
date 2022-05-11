@@ -119,12 +119,15 @@ int wc()
 {
   char strSeparator[BUFFER_SIZE] = {0};
   char strSource   [BUFFER_SIZE] = {0};
+  char strResult   [BUFFER_SIZE] = {0};  // Buffer for separate words
   char strInput    [BUFFER_SIZE] = {0};
     
   int iWordCounter = 0;
-  int iSepLen      = 0; 
+  int iSepLen      = 0;
+  int iResLen      = 0; 
   
   char *strSepBegin = NULL;
+  char *strWrdBegin = NULL;
 
 
   get_InputStr(strSeparator, "Separator");
@@ -140,7 +143,19 @@ int wc()
     /* Separator not at beginning */
     if(strSepBegin != strSource)
     {
-      iWordCounter++;
+      strWrdBegin = strSource;
+      
+      /* Add word to result */
+      while(strWrdBegin < strSepBegin)
+      {
+        strResult[iResLen++] = *strWrdBegin++;        
+      }
+      
+      /* Add separator to result */
+      strResult[iResLen++] = ',';
+      strResult[iResLen++] = ' ';
+      
+      ++iWordCounter;
     }
     
     /* move after separator */
@@ -153,14 +168,27 @@ int wc()
   /* word after last separator */
   if(strSource[0])
   {
+    strWrdBegin = strSource;
+    
+    while(*strWrdBegin)
+    {
+      strResult[iResLen++] = *strWrdBegin++; 
+    }
+    
     iWordCounter++;
+  }
+  /* Remove last word separator */
+  else
+  {
+    strResult[--iResLen] = '\0';
+    strResult[--iResLen] = '\0';   
   }
   
   printf("\t *Word count\n\n");
   printf("SRC\t[%s]\n"  , strInput     );
   printf("SEP\t[%s]\n\n", strSeparator );
-  printf("WC \t[%d]\n"  , iWordCounter );
-  
+  printf("Words\t[%s]\n",   strResult    );
+  printf("Count\t[%d]\n"  , iWordCounter );
   return 0; // ERROR_NONE 
 }
 
@@ -195,9 +223,11 @@ int replace_last()
     if( (iSrcLen - iFromLen + strlen(strTo)) >= BUFFER_SIZE)
     {
       printf("str[%d] - fr[%d] + to[%d]\nTot[%d]\nMax[%d]\n "
-      , iSrcLen, iFromLen, strlen(strTo), (iSrcLen - iFromLen + strlen(strTo)) , BUFFER_SIZE - 1);
+          , iSrcLen, iFromLen, strlen(strTo)
+          , (iSrcLen - iFromLen + strlen(strTo)) , BUFFER_SIZE - 1);
+          
       printf("Input data will cause \"Memory fault\"\n");
-        
+      
       clear_Screen();
         
       continue;
@@ -599,6 +629,7 @@ int  is_StringNumbers(char *strString)
     
     ++iCnt; 
   }
+  
   return 0;       //TRUE
 }
 
@@ -632,7 +663,7 @@ void clear_STDIN()
   do
   {
     c = getchar();
-    //printf("Cl ch: %d\n", c);
+    // printf("Cl ch: %d\n", c);
   }while(c != '\n' && c != EOF);
 }
 
@@ -647,7 +678,6 @@ void remove_LF(char *strString)
     *(strString + iLen) = '\0'; 
   }
 }
-
 
 
 /*   ****************  */
